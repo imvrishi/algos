@@ -1,4 +1,4 @@
-package tree
+package main
 
 import "fmt"
 
@@ -129,14 +129,73 @@ func (t *BinarySearchTree) Remove(value int) {
 	}
 }
 
-func (t *BinarySearchTree) Traverse(node *Node) {
-	fmt.Println(node.value)
+func (t *BinarySearchTree) BFS() []int {
+	currentNode := t.root
+	list := []int{}
+	queue := []*Node{currentNode}
+	queueSize := 1
+
+	for queueSize > 0 {
+		currentNode = queue[0]
+		queue = queue[1:]
+		queueSize--
+		list = append(list, currentNode.value)
+		if currentNode.left != nil {
+			queue = append(queue, currentNode.left)
+			queueSize++
+		}
+		if currentNode.right != nil {
+			queue = append(queue, currentNode.right)
+			queueSize++
+		}
+	}
+
+	return list
+}
+
+func (t *BinarySearchTree) DFSInOrder() *[]int {
+	return t.TraverseInOrder(t.root, &[]int{})
+}
+
+func (t *BinarySearchTree) TraverseInOrder(node *Node, list *[]int) *[]int {
 	if node.left != nil {
-		t.Traverse(node.left)
+		t.TraverseInOrder(node.left, list)
+	}
+	*list = append(*list, node.value)
+	if node.right != nil {
+		t.TraverseInOrder(node.right, list)
+	}
+	return list
+}
+
+func (t *BinarySearchTree) DFSPreOrder() *[]int {
+	return t.TraversePreOrder(t.root, &[]int{})
+}
+
+func (t *BinarySearchTree) TraversePreOrder(node *Node, list *[]int) *[]int {
+	*list = append(*list, node.value)
+	if node.left != nil {
+		t.TraversePreOrder(node.left, list)
 	}
 	if node.right != nil {
-		t.Traverse(node.right)
+		t.TraversePreOrder(node.right, list)
 	}
+	return list
+}
+
+func (t *BinarySearchTree) DFSPostOrder() *[]int {
+	return t.TraversePostOrder(t.root, &[]int{})
+}
+
+func (t *BinarySearchTree) TraversePostOrder(node *Node, list *[]int) *[]int {
+	if node.left != nil {
+		t.TraversePostOrder(node.left, list)
+	}
+	if node.right != nil {
+		t.TraversePostOrder(node.right, list)
+	}
+	*list = append(*list, node.value)
+	return list
 }
 
 func main() {
@@ -148,8 +207,9 @@ func main() {
 	tree.Insert(170)
 	tree.Insert(15)
 	tree.Insert(1)
-	tree.Remove(20)
-	tree.Traverse(tree.root)
-	// fmt.Println(tree.Lookup(20))
-	// fmt.Println(tree.Lookup(30))
+	// tree.Remove(20)
+	// fmt.Println(tree.BFS())
+	fmt.Println(tree.DFSInOrder())
+	fmt.Println(tree.DFSPreOrder())
+	fmt.Println(tree.DFSPostOrder())
 }
